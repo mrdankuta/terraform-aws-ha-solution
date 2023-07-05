@@ -1,7 +1,7 @@
 # Create launch template for wordpress
 
 resource "aws_launch_template" "wpsite-launch-template" {
-  image_id               = var.ami
+  image_id               = data.aws_ami.latest-rhel860-image.image_id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
 
@@ -9,10 +9,10 @@ resource "aws_launch_template" "wpsite-launch-template" {
     name = aws_iam_instance_profile.ec2_instance_profile.id
   }
 
-  key_name = var.keypair
+#   key_name = var.keypair
 
   placement {
-    availability_zone = random_shuffle.az.result
+    availability_zone = "random_shuffle.az.result"
   }
 
   lifecycle {
@@ -31,7 +31,7 @@ resource "aws_launch_template" "wpsite-launch-template" {
 
   }
 
-  user_data = filebase64("${path.module}/wordpress.sh")
+#   user_data = filebase64("${path.module}/wordpress.sh")
 }
 
 
@@ -66,13 +66,13 @@ resource "aws_autoscaling_group" "wpsite-asg" {
 # Attach autoscaling group of  wordpress application to internal loadbalancer
 resource "aws_autoscaling_attachment" "wpsite_asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.wpsite-asg.id
-  alb_target_group_arn   = aws_lb_target_group.wpsite-tgt.arn
+  lb_target_group_arn   = aws_lb_target_group.wpsite-tgt.arn
 }
 
 
 # Create launch template for toooling
 resource "aws_launch_template" "tooling-launch-template" {
-  image_id               = var.ami
+  image_id               = data.aws_ami.latest-rhel860-image.image_id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.webserver-sg.id]
 
@@ -80,10 +80,10 @@ resource "aws_launch_template" "tooling-launch-template" {
     name = aws_iam_instance_profile.ec2_instance_profile.id
   }
 
-  key_name = var.keypair
+#   key_name = var.keypair
 
   placement {
-    availability_zone = random_shuffle.az.result
+    availability_zone = "random_shuffle.az.result"
   }
 
   lifecycle {
@@ -102,7 +102,7 @@ resource "aws_launch_template" "tooling-launch-template" {
 
   }
 
-  user_data = filebase64("${path.module}/tooling.sh")
+#   user_data = filebase64("${path.module}/tooling.sh")
 }
 
 
@@ -138,5 +138,5 @@ resource "aws_autoscaling_group" "tooling-asg" {
 # Attach autoscaling group of  tooling application to internal loadbalancer
 resource "aws_autoscaling_attachment" "asg_attachment_tooling" {
   autoscaling_group_name = aws_autoscaling_group.tooling-asg.id
-  alb_target_group_arn   = aws_lb_target_group.tooling-tgt.arn
+  lb_target_group_arn   = aws_lb_target_group.tooling-tgt.arn
 }

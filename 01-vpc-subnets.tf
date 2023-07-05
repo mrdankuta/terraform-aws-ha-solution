@@ -1,8 +1,3 @@
-# Get list of availability zones
-data "aws_availability_zones" "az-list" {
-  state = "available"
-}
-
 # Create VPC
 resource "aws_vpc" "part-unltd-vpc" {
   cidr_block                      = var.vpc_cidr

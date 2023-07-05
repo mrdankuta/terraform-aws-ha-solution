@@ -29,7 +29,7 @@ resource "random_shuffle" "az" {
 
 # Create Bastion Server Launch Template
 resource "aws_launch_template" "bastion-launch-template" {
-  image_id               = var.ami
+  image_id               = data.aws_ami.latest-rhel860-image.image_id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
@@ -37,10 +37,10 @@ resource "aws_launch_template" "bastion-launch-template" {
     name = aws_iam_instance_profile.ec2_instance_profile.id
   }
 
-  key_name = var.keypair
+#   key_name = var.keypair
 
   placement {
-    availability_zone = random_shuffle.az.result
+    availability_zone = "random_shuffle.az.result"
   }
 
   lifecycle {
@@ -58,7 +58,7 @@ resource "aws_launch_template" "bastion-launch-template" {
   )
   }
 
-  user_data = filebase64("${path.module}/bastion.sh")
+#   user_data = filebase64("${path.module}/bastion.sh")
 }
 
 
@@ -91,7 +91,7 @@ resource "aws_autoscaling_group" "bastion-asg" {
 
 # Create Nginx Proxy Server Launch Template
 resource "aws_launch_template" "nginx-launch-template" {
-  image_id               = var.ami
+  image_id               = data.aws_ami.latest-ubuntu2004-image.image_id
   instance_type          = "t2.micro"
   vpc_security_group_ids = [aws_security_group.nginx-sg.id]
 
@@ -99,10 +99,10 @@ resource "aws_launch_template" "nginx-launch-template" {
     name = aws_iam_instance_profile.ec2_instance_profile.id
   }
 
-  key_name =  var.keypair
+#   key_name =  var.keypair
 
   placement {
-    availability_zone = random_shuffle.az.result
+    availability_zone = "random_shuffle.az.result"
   }
 
   lifecycle {
@@ -120,7 +120,7 @@ resource "aws_launch_template" "nginx-launch-template" {
   )
   }
 
-  user_data = filebase64("${path.module}/nginx.sh")
+#   user_data = filebase64("${path.module}/nginx.sh")
 }
 
 
