@@ -23,15 +23,15 @@ resource "aws_launch_template" "wpsite-launch-template" {
     resource_type = "instance"
 
     tags = merge(
-    var.tags,
-    {
-      Name = "wordpress-launch-template"
-    },
-  )
+      var.tags,
+      {
+        Name = "wordpress-launch-template"
+      },
+    )
 
   }
 
-#   user_data = filebase64("${path.module}/wordpress.sh")
+  #   user_data = filebase64("${path.module}/wordpress.sh")
 }
 
 
@@ -62,5 +62,5 @@ resource "aws_autoscaling_group" "wpsite-asg" {
 # Attach autoscaling group of wordpress application to internal loadbalancer
 resource "aws_autoscaling_attachment" "wpsite_asg_attachment" {
   autoscaling_group_name = aws_autoscaling_group.wpsite-asg.id
-  lb_target_group_arn   = var.wpsite_target_grp_arn
+  lb_target_group_arn    = var.wpsite_target_grp_arn
 }

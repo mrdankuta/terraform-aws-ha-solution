@@ -14,7 +14,7 @@ variable "rds_dbadmin_password" {}
 variable "security_groups_ids" {}
 
 variable "is_multi_az" {
-    default = "true"
+  default = "true"
 }
 
 variable "tags" {}

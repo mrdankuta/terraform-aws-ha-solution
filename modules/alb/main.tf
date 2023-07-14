@@ -3,13 +3,13 @@
 
 # Create Application Load Balancer
 resource "aws_lb" "public-alb" {
-  name     = "public-alb"
-  internal = false
+  name            = "public-alb"
+  internal        = false
   security_groups = var.public_alb_security_groups
 
   subnets = var.public_alb_subnets
 
-   tags = merge(
+  tags = merge(
     var.tags,
     {
       Name = "${var.org_code}-public-alb"
@@ -56,13 +56,13 @@ resource "aws_lb_listener" "nginx-listner" {
 
 # Create Application Load Balancer
 resource "aws_lb" "internal-alb" {
-  name     = "int-alb"
-  internal = false
+  name            = "int-alb"
+  internal        = false
   security_groups = var.internal_alb_security_groups
 
   subnets = var.internal_alb_subnets
 
-   tags = merge(
+  tags = merge(
     var.tags,
     {
       Name = "${var.org_code}-internal-alb"

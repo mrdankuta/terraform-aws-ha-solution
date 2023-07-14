@@ -8,7 +8,7 @@ resource "aws_launch_template" "nginx-launch-template" {
     name = var.iam_instance_profile_id
   }
 
-  key_name =  var.keypair
+  key_name = var.keypair
 
   placement {
     availability_zone = "random_shuffle.az.result"
@@ -22,14 +22,14 @@ resource "aws_launch_template" "nginx-launch-template" {
     resource_type = "instance"
 
     tags = merge(
-    var.tags,
-    {
-      Name = "nginx-launch-template"
-    },
-  )
+      var.tags,
+      {
+        Name = "nginx-launch-template"
+      },
+    )
   }
 
-#   user_data = filebase64("${path.module}/nginx.sh")
+  #   user_data = filebase64("${path.module}/nginx.sh")
 }
 
 

@@ -1,7 +1,7 @@
 # Get latest RHEL 8.6.0 image
 data "aws_ami" "latest-rhel860-image" {
-  most_recent      = true
-  owners           = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"
@@ -22,8 +22,8 @@ data "aws_ami" "latest-rhel860-image" {
 
 # Get latest Ubuntu 20.04 image
 data "aws_ami" "latest-ubuntu2004-image" {
-  most_recent      = true
-  owners           = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
   filter {
     name   = "name"

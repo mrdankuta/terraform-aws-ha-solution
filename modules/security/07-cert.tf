@@ -6,7 +6,7 @@ resource "aws_acm_certificate" "org_domain_cert" {
 
   tags = merge(
     var.tags, {
-        Name = "${var.org_code}-cert"
+      Name = "${var.org_code}-cert"
     }
   )
 

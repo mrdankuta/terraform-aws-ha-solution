@@ -1,6 +1,6 @@
 # Create sns topic & notification for all the auto scaling groups
 resource "aws_sns_topic" "asg-sns" {
-name = "Default_CloudWatch_Alarms_Topic"
+  name = "Default_CloudWatch_Alarms_Topic"
 }
 
 resource "aws_autoscaling_notification" "asg_notifications" {
@@ -22,5 +22,5 @@ resource "aws_autoscaling_notification" "asg_notifications" {
 
 
 resource "random_shuffle" "az" {
-  input        = var.az_list_names
+  input = var.az_list_names
 }

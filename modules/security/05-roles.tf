@@ -18,7 +18,7 @@ resource "aws_iam_role" "assume_role" {
 
   tags = merge(
     var.tags, {
-        Name = "${var.org_code}-${var.assume_role_name}-assume-role"
+      Name = "${var.org_code}-${var.assume_role_name}-assume-role"
     }
   )
 }
@@ -37,7 +37,7 @@ resource "aws_iam_policy" "role_policy" {
         # Action = [
         #   "ec2:Describe*",
         # ]
-        Action = var.iam_role_policy_action
+        Action   = var.iam_role_policy_action
         Effect   = "Allow"
         Resource = "*"
       },
@@ -46,7 +46,7 @@ resource "aws_iam_policy" "role_policy" {
 
   tags = merge(
     var.tags, {
-        Name = "${var.org_code}-${var.assume_role_name}-assume-role-policy"
+      Name = "${var.org_code}-${var.assume_role_name}-assume-role-policy"
     }
   )
 }

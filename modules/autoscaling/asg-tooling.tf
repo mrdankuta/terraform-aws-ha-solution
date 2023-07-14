@@ -21,16 +21,16 @@ resource "aws_launch_template" "tooling-launch-template" {
   tag_specifications {
     resource_type = "instance"
 
-  tags = merge(
-    var.tags,
-    {
-      Name = "tooling-launch-template"
-    },
-  )
+    tags = merge(
+      var.tags,
+      {
+        Name = "tooling-launch-template"
+      },
+    )
 
   }
 
-#   user_data = filebase64("${path.module}/tooling.sh")
+  #   user_data = filebase64("${path.module}/tooling.sh")
 }
 
 
@@ -62,5 +62,5 @@ resource "aws_autoscaling_group" "tooling-asg" {
 # Attach autoscaling group of  tooling application to internal loadbalancer
 resource "aws_autoscaling_attachment" "asg_attachment_tooling" {
   autoscaling_group_name = aws_autoscaling_group.tooling-asg.id
-  lb_target_group_arn   = var.tooling_target_grp_arn
+  lb_target_group_arn    = var.tooling_target_grp_arn
 }

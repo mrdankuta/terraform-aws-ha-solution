@@ -3,7 +3,7 @@ resource "aws_db_subnet_group" "rds-grp" {
   name       = "rds-grp"
   subnet_ids = var.subnet_ids_list
 
- tags = merge(
+  tags = merge(
     var.tags,
     {
       Name = "${var.org_code}-rds-grp"

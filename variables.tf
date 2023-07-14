@@ -15,7 +15,7 @@ variable "layer-subnets-num" {}
 
 variable "tags" {
   default = {}
-  type = map(string)
+  type    = map(string)
 }
 
 variable "org_base_domain" {}
@@ -41,13 +41,13 @@ variable "assume_role_service" {}
 # variable "iam_role_policy_name" {}
 
 variable "iam_role_policy_action" {
-    default = ["ec2:Describe*"]
-    type = list(string)
+  default = ["ec2:Describe*"]
+  type    = list(string)
 }
 
 variable "bastion_cidr" {
-    default = ["0.0.0.0/0"]
-    type = list(string)
+  default = ["0.0.0.0/0"]
+  type    = list(string)
 }
 
 variable "toolingsite_a_record" {}
