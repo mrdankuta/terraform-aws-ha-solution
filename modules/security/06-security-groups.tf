@@ -1,7 +1,7 @@
 # Create security group for the Public ALB Load Balancer. Open ports `80` for `http` and `443` for `https` connections from anywhere `0.0.0.0/0`
 resource "aws_security_group" "public-alb-sg" {
   name        = "public-alb-sg"
-  vpc_id      = aws_vpc.part-unltd-vpc.id
+  vpc_id      = var.vpc_id
   description = "Allow TLS inbound traffic"
 
   ingress {
@@ -39,7 +39,7 @@ resource "aws_security_group" "public-alb-sg" {
 # Create security group for Bastion server. Open port `22` for `SSH` and limit connections to be from `my IP`
 resource "aws_security_group" "bastion_sg" {
   name          = "vpc_web_sg"
-  vpc_id        = aws_vpc.part-unltd-vpc.id
+  vpc_id        = var.vpc_id
   description   = "Allow incoming HTTP connections."
 
   ingress {
@@ -47,7 +47,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = [var.myip]
+    cidr_blocks = var.bastion_cidr
   }
 
   egress {
@@ -70,7 +70,7 @@ resource "aws_security_group" "bastion_sg" {
 # Create security group for Nginx Reverse Proxy server. Open port `22` for `SSH` and limit connections to be from Bastion Server only. Open ports `80` for `http` and `443` for `https` traffic from External Load Balancer Server only.
 resource "aws_security_group" "nginx-sg" {
   name   = "nginx-sg"
-  vpc_id = aws_vpc.part-unltd-vpc.id
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0
@@ -110,7 +110,7 @@ resource "aws_security_group_rule" "inbound-bastion-ssh" {
 # Create security group for the Internal Load Balancer. Open ports `80` for `http` and `443` for `https` connections from Nginx Reverse Proxy Servers Only.
 resource "aws_security_group" "int-alb-sg" {
   name   = "int-alb-sg"
-  vpc_id = aws_vpc.part-unltd-vpc.id
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0
@@ -141,7 +141,7 @@ resource "aws_security_group_rule" "inbound-ialb-https" {
 # Create security groups for the Websites. One Sg for Wordpress. Another for Tooling. Open ports `80` for `http` and `443` for `https` connections from Internal Load Balancer Servers Only. Open port `22` for `SSH` and limit connections to be from Bastion Server only.
 resource "aws_security_group" "webserver-sg" {
   name   = "my-asg-sg"
-  vpc_id = aws_vpc.part-unltd-vpc.id
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0
@@ -177,13 +177,15 @@ resource "aws_security_group_rule" "inbound-web-ssh" {
   security_group_id        = aws_security_group.webserver-sg.id
 }
 
+### MOD ALERT! This can be done in a way that takes input variable of number of websites to be hosted on the network, and for each website, creates a security group and rules (perhaps with a lookup function)
+
 
 
 # Create security group for the data layer. Open ports `3306` for `MYSQL` connections from Webservers. 
 # Create security group for EFS. Open port `2049` for `EFS` mounting from webservers.
 resource "aws_security_group" "datalayer-sg" {
   name   = "datalayer-sg"
-  vpc_id = aws_vpc.part-unltd-vpc.id
+  vpc_id = var.vpc_id
 
   egress {
     from_port   = 0

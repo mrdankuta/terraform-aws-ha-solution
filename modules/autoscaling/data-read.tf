@@ -1,8 +1,3 @@
-# Get list of availability zones
-data "aws_availability_zones" "az-list" {
-  state = "available"
-}
-
 # Get latest RHEL 8.6.0 image
 data "aws_ami" "latest-rhel860-image" {
   most_recent      = true

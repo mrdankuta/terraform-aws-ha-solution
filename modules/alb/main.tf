@@ -5,14 +5,9 @@
 resource "aws_lb" "public-alb" {
   name     = "public-alb"
   internal = false
-  security_groups = [
-    aws_security_group.public-alb-sg.id,
-  ]
+  security_groups = var.public_alb_security_groups
 
-  subnets = [
-    aws_subnet.public-subnet-punltd[0].id,
-    aws_subnet.public-subnet-punltd[1].id
-  ]
+  subnets = var.public_alb_subnets
 
    tags = merge(
     var.tags,
@@ -21,8 +16,8 @@ resource "aws_lb" "public-alb" {
     },
   )
 
-  ip_address_type    = "ipv4"
-  load_balancer_type = "application"
+  ip_address_type    = var.public_alb_ip_address_type
+  load_balancer_type = var.public_alb_load_balancer_type
 }
 
 
@@ -31,25 +26,25 @@ resource "aws_lb_target_group" "nginx-tgt" {
   health_check {
     interval            = 10
     path                = "/healthstatus"
-    protocol            = "HTTPS"
+    protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 5
     unhealthy_threshold = 2
   }
   name        = "nginx-tgt"
-  port        = 443
-  protocol    = "HTTPS"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = aws_vpc.part-unltd-vpc.id
+  vpc_id      = var.vpc_id
 }
 
 
 # Add listener for `HTTP` and `HTTPS`.
 resource "aws_lb_listener" "nginx-listner" {
   load_balancer_arn = aws_lb.public-alb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.partsunltd_hz_recs.certificate_arn
+  port              = 80
+  protocol          = "HTTP"
+  # certificate_arn   = aws_acm_certificate_validation.partsunltd_hz_recs.certificate_arn
 
   default_action {
     type             = "forward"
@@ -63,14 +58,9 @@ resource "aws_lb_listener" "nginx-listner" {
 resource "aws_lb" "internal-alb" {
   name     = "int-alb"
   internal = false
-  security_groups = [
-    aws_security_group.int-alb-sg.id,
-  ]
+  security_groups = var.internal_alb_security_groups
 
-  subnets = [
-    aws_subnet.prv-compute-subnet-punltd[0].id,
-    aws_subnet.prv-compute-subnet-punltd[1].id
-  ]
+  subnets = var.internal_alb_subnets
 
    tags = merge(
     var.tags,
@@ -79,8 +69,8 @@ resource "aws_lb" "internal-alb" {
     },
   )
 
-  ip_address_type    = "ipv4"
-  load_balancer_type = "application"
+  ip_address_type    = var.internal_alb_ip_address_type
+  load_balancer_type = var.internal_alb_load_balancer_type
 }
 
 
@@ -89,16 +79,16 @@ resource "aws_lb_target_group" "tooling-tgt" {
   health_check {
     interval            = 10
     path                = "/healthstatus"
-    protocol            = "HTTPS"
+    protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 5
     unhealthy_threshold = 2
   }
   name        = "tooling-tgt"
-  port        = 443
-  protocol    = "HTTPS"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = aws_vpc.part-unltd-vpc.id
+  vpc_id      = var.vpc_id
 }
 
 
@@ -107,16 +97,16 @@ resource "aws_lb_target_group" "wpsite-tgt" {
   health_check {
     interval            = 10
     path                = "/healthstatus"
-    protocol            = "HTTPS"
+    protocol            = "HTTP"
     timeout             = 5
     healthy_threshold   = 5
     unhealthy_threshold = 2
   }
   name        = "wpsite-tgt"
-  port        = 443
-  protocol    = "HTTPS"
+  port        = 80
+  protocol    = "HTTP"
   target_type = "instance"
-  vpc_id      = aws_vpc.part-unltd-vpc.id
+  vpc_id      = var.vpc_id
 }
 
 
@@ -126,9 +116,9 @@ resource "aws_lb_target_group" "wpsite-tgt" {
 
 resource "aws_lb_listener" "web-listener" {
   load_balancer_arn = aws_lb.internal-alb.arn
-  port              = 443
-  protocol          = "HTTPS"
-  certificate_arn   = aws_acm_certificate_validation.partsunltd_hz_recs.certificate_arn
+  port              = 80
+  protocol          = "HTTP"
+  # certificate_arn   = aws_acm_certificate_validation.partsunltd_hz_recs.certificate_arn
 
   default_action {
     type             = "forward"

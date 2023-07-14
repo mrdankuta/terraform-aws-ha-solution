@@ -1,6 +1,6 @@
 # Create a certificate, public zone, and validate the certificate
 
-resource "aws_acm_certificate" "mydomain_cert" {
+resource "aws_acm_certificate" "org_domain_cert" {
   domain_name       = "*.${var.org_base_domain}"
   validation_method = "DNS"
 
@@ -17,16 +17,16 @@ resource "aws_acm_certificate" "mydomain_cert" {
 
 
 # Get the hosted zone data
-data "aws_route53_zone" "partsunltd_hz" {
+data "aws_route53_zone" "org_hosted_zone" {
   name         = var.org_base_domain
   private_zone = false
 }
 
 
 # select validation method
-resource "aws_route53_record" "partsunltd_hz_recs" {
+resource "aws_route53_record" "org_hosted_zone_records" {
   for_each = {
-    for dvo in aws_acm_certificate.mydomain_cert.domain_validation_options : dvo.domain_name => {
+    for dvo in aws_acm_certificate.org_domain_cert.domain_validation_options : dvo.domain_name => {
       name   = dvo.resource_record_name
       record = dvo.resource_record_value
       type   = dvo.resource_record_type
@@ -38,7 +38,7 @@ resource "aws_route53_record" "partsunltd_hz_recs" {
   records         = [each.value.record]
   ttl             = 60
   type            = each.value.type
-  zone_id         = data.aws_route53_zone.partsunltd_hz.zone_id
+  zone_id         = data.aws_route53_zone.org_hosted_zone.zone_id
 }
 
 # CODE EXPLANATION FROM CHATGPT FOR CODE ABOVE
@@ -60,37 +60,45 @@ resource "aws_route53_record" "partsunltd_hz_recs" {
 
 # -----------------------------------------------------------------------------
 
+########################################################
+########################################################
+## NOTE: 
+## I commented out this block because terraform apply wouldn't complete due to certificate pending verification status. 
+## Hence, access to subsequent instances will be on HTTP. Uncomment this block and change instances access to HTTPS after 
+## figuring out how to fix the verification pending challenge.
+##########################################################
+##########################################################
 
 # validate the certificate through DNS method
-resource "aws_acm_certificate_validation" "partsunltd_hz_recs" {
-  certificate_arn         = aws_acm_certificate.mydomain_cert.arn
-  validation_record_fqdns = [for record in aws_route53_record.partsunltd_hz_recs : record.fqdn]
-}
+# resource "aws_acm_certificate_validation" "org_hosted_zone_records" {
+#   certificate_arn         = aws_acm_certificate.org_domain_cert.arn
+#   validation_record_fqdns = [for record in aws_route53_record.org_hosted_zone_records : record.fqdn]
+# }
 
 
-# create records for tooling site
+# create records for wpsite site
 resource "aws_route53_record" "tooling" {
-  zone_id = data.aws_route53_zone.partsunltd_hz.zone_id
-  name    = "tooling.${var.org_base_domain}"
+  zone_id = data.aws_route53_zone.org_hosted_zone.zone_id
+  name    = "${var.toolingsite_a_record}.${var.org_base_domain}"
   type    = "A"
 
   alias {
-    name                   = aws_lb.public-alb.dns_name
-    zone_id                = aws_lb.public-alb.zone_id
+    name                   = var.alias_name
+    zone_id                = var.alias_zone_id
     evaluate_target_health = true
   }
 }
 
 
-# create records for tooling site
+# create records for wp site
 resource "aws_route53_record" "wordpress" {
-  zone_id = data.aws_route53_zone.partsunltd_hz.zone_id
-  name    = "wpsite.${var.org_base_domain}"
+  zone_id = data.aws_route53_zone.org_hosted_zone.zone_id
+  name    = "${var.wpsite_a_record}.${var.org_base_domain}"
   type    = "A"
 
   alias {
-    name                   = aws_lb.public-alb.dns_name
-    zone_id                = aws_lb.public-alb.zone_id
+    name                   = var.alias_name
+    zone_id                = var.alias_zone_id
     evaluate_target_health = true
   }
 }

@@ -1,5 +1,5 @@
 # Create VPC
-resource "aws_vpc" "part-unltd-vpc" {
+resource "aws_vpc" "network-vpc" {
   cidr_block                      = var.vpc_cidr
   enable_dns_support              = var.enable_dns_support
   enable_dns_hostnames            = var.enable_dns_hostnames
@@ -14,8 +14,8 @@ resource "aws_vpc" "part-unltd-vpc" {
 
 
 # Create public layer subnets
-resource "aws_subnet" "public-subnet-punltd" {
-  vpc_id                  = aws_vpc.part-unltd-vpc.id
+resource "aws_subnet" "public-subnet" {
+  vpc_id                  = aws_vpc.network-vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8 , count.index + (var.layer-subnets-num*1))
   map_public_ip_on_launch = true
   count                   = var.layer-subnets-num == null || var.layer-subnets-num <= 0 || var.layer-subnets-num > length(data.aws_availability_zones.az-list.names) - 1 ? length(data.aws_availability_zones.az-list.names) : var.layer-subnets-num
@@ -29,8 +29,8 @@ resource "aws_subnet" "public-subnet-punltd" {
 
 
 # Create proxy layer subnets
-resource "aws_subnet" "prv-proxy-subnet-punltd" {
-  vpc_id                  = aws_vpc.part-unltd-vpc.id
+resource "aws_subnet" "prv-proxy-subnet" {
+  vpc_id                  = aws_vpc.network-vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8 , count.index + (var.layer-subnets-num*2))
   map_public_ip_on_launch = true
   count                   = var.layer-subnets-num == null || var.layer-subnets-num <= 0 || var.layer-subnets-num > length(data.aws_availability_zones.az-list.names) - 1 ? length(data.aws_availability_zones.az-list.names) : var.layer-subnets-num
@@ -44,8 +44,8 @@ resource "aws_subnet" "prv-proxy-subnet-punltd" {
 
 
 # Create compute layer subnets
-resource "aws_subnet" "prv-compute-subnet-punltd" {
-  vpc_id                  = aws_vpc.part-unltd-vpc.id
+resource "aws_subnet" "prv-compute-subnet" {
+  vpc_id                  = aws_vpc.network-vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8 , count.index + (var.layer-subnets-num*3))
   map_public_ip_on_launch = true
   count                   = var.layer-subnets-num == null || var.layer-subnets-num <= 0 || var.layer-subnets-num > length(data.aws_availability_zones.az-list.names) - 1 ? length(data.aws_availability_zones.az-list.names) : var.layer-subnets-num
@@ -59,8 +59,8 @@ resource "aws_subnet" "prv-compute-subnet-punltd" {
 
 
 # Create data layer subnets
-resource "aws_subnet" "prv-data-subnet-punltd" {
-  vpc_id                  = aws_vpc.part-unltd-vpc.id
+resource "aws_subnet" "prv-data-subnet" {
+  vpc_id                  = aws_vpc.network-vpc.id
   cidr_block              = cidrsubnet(var.vpc_cidr, 8 , count.index + (var.layer-subnets-num*4))
   map_public_ip_on_launch = true
   count                   = var.layer-subnets-num == null || var.layer-subnets-num <= 0 || var.layer-subnets-num > length(data.aws_availability_zones.az-list.names) - 1 ? length(data.aws_availability_zones.az-list.names) : var.layer-subnets-num
